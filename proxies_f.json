@@ -1,0 +1,30 @@
+
+{
+  "proxies": [
+    {
+      "host":"38.154.170.33",
+      "port": 3128,
+      "protocol": "http"
+    },
+    {
+      "host": "192.241.96.45",
+      "port": 3128,
+      "protocol": "http"
+    },
+    {
+      "host": "69.58.77.57",
+      "port": 3128,
+      "protocol": "http"
+    },
+    {
+      "host": "156.248.67.238",
+      "port": 3128,
+      "protocol": "http"
+    },
+    {
+      "host": "38.152.44.27",
+      "port": 3128,
+      "protocol": "http"
+    }
+  ]
+}
