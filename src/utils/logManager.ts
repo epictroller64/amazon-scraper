@@ -25,6 +25,9 @@ export function saveInfo(apiKey: string, message: string, jobId: string) {
   saveLog("info", apiKey, message, jobId).then();
 }
 
+export function saveSystemError(message: string) {
+  saveLog("error", "system", message, "N/A").then();
+}
 export function saveSystemInfo(message: string) {
   saveLog("info", "system", message, "N/A").then();
 }

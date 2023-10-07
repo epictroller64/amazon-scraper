@@ -1,10 +1,5 @@
 
 {
   "proxies": [
-    {
-      "host":"38.154.170.33",
-      "port": 3128,
-      "protocol": "http"
-    }
   ]
 }

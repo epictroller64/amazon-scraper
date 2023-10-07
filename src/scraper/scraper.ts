@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import axios from "axios";
 import { parse } from "node-html-parser";
 import {
   Product,
@@ -7,7 +7,7 @@ import {
   SearchOptions,
   SellerDetails,
 } from "../types";
-import { RequestManager } from "../utils/requestManager";
+import { Request } from "../utils/requestManager";
 import {
   parseLink,
   parseProductDetails,
@@ -16,10 +16,8 @@ import {
 } from "./utils/parser";
 
 export class AmazonScraper {
-  requestManager: RequestManager;
-  private apiKey: string;
-  constructor(requestManager: RequestManager, apiKey: string) {
-    this.requestManager = requestManager;
+  private readonly apiKey: string;
+  constructor(apiKey: string) {
     this.apiKey = apiKey;
   }
 
@@ -28,7 +26,7 @@ export class AmazonScraper {
       const fetch = async () => {
         try {
           const url = `https://www.amazon.${domain}/sp?language=en&ie=UTF8&seller=${id}`;
-          const result = await this.requestManager.getRequest(url, this.apiKey);
+          const result = await Request.getRequest(url, this.apiKey);
           const sellerDetails = parseSellerDetails(result.data);
           resolve(sellerDetails);
         } catch (e) {
@@ -47,12 +45,9 @@ export class AmazonScraper {
     for (let i = 1; i <= maxPages; i++) {
       const promise = new Promise<ProductReviewPage>((resolve, reject) => {
         const fetch = async () => {
-          const url = `https://amazon.${domain}/product-reviews/${asin}/ref=cm_cr_arp_d_paging_btm_next_${i}?pageNumber=${i}&language=en_GB`;
+          const url = `https://www.amazon.${domain}/product-reviews/${asin}/ref=cm_cr_arp_d_paging_btm_next_${i}?pageNumber=${i}&language=en_GB`;
           try {
-            const response = await this.requestManager.getRequest(
-              url,
-              this.apiKey,
-            );
+            const response = await Request.getRequest(url, this.apiKey);
             const reviewPageResponse: ProductReviewPage = {
               pageNum: i,
               reviews: parseReviews(response.data),
@@ -70,15 +65,11 @@ export class AmazonScraper {
   }
   async getProductByAsin(asin: string, domain: "com" | "de") {
     const url = `https://amazon.${domain}/dp/${asin}`;
-    const response = await this.requestManager.getRequest(url, this.apiKey);
+    const response = await Request.getRequest(url, this.apiKey);
     parseProductDetails(response.data);
   }
   async getProductDetails(url: string) {
-    const response = await this.requestManager.getRequest(
-      url,
-      this.apiKey,
-      true,
-    );
+    const response = await Request.getRequest(url, this.apiKey, true);
     const html = response.data;
     const productFull = parseProductDetails(html);
     productFull.url = url;
@@ -127,7 +118,7 @@ export class AmazonScraper {
       if (symbol && link && image && title) {
         product.symbol = symbol.text;
         product.price = parseInt(price!.text);
-        product.url = `https://amazon.${domain}${link}&language=en_GB`;
+        product.url = `https://www.amazon.${domain}${link}&language=en_GB`;
         product.imageSrc = image;
         product.title = title;
         if (reviewCount) {
@@ -156,11 +147,10 @@ export class AmazonScraper {
     };
     const url =
       "https://www.amazon.com/portal-migration/hz/glow/address-change?actionSource=glow";
-    const response = await axios.get(url, {
+    return await axios.get(url, {
       method: "POST",
       data: JSON.stringify(body),
     });
-    return response;
   }
 
   search(
@@ -170,7 +160,7 @@ export class AmazonScraper {
   ): Promise<ProductSearch>[] {
     const productSearchPromises: Promise<ProductSearch>[] = [];
     for (let i = 1; i <= options.maxPages; i++) {
-      const url = `https://amazon.${domain}/s?k=${keyword}&page=${i}`;
+      const url = `https://www.amazon.${domain}/s?k=${keyword}&page=${i}`;
       const promise = new Promise<ProductSearch>((resolve, reject) => {
         const fetch = async () => {
           try {
@@ -200,11 +190,10 @@ export class AmazonScraper {
     ignoreNoPrice: boolean,
     domain: "de" | "com",
   ): Promise<Product[]> {
-    const response = await this.requestManager.getRequest(
-      url,
-      this.apiKey,
-      true,
-    );
+    const response = await Request.getRequest(url, this.apiKey, true);
+    if (!response) {
+      console.log("false");
+    }
     const html = response.data;
     return this.getProducts(html, ignoreNoPrice, domain);
   }

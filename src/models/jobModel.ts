@@ -1,11 +1,10 @@
+import { Domain, Type } from "../types";
+
 export interface JobModel {
-  title:
-    | "amazon_search"
-    | "amazon_asin"
-    | "product_reviews"
-    | "product_details"
-    | "seller_details";
+  type: Type;
   keyword: string;
-  pages: number;
-  domain: "de" | "com";
+  pages?: number;
+  domain: Domain;
+  jobId?: string;
+  ownerApiKey?: string;
 }

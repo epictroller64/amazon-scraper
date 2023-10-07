@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { Product } from "../types";
+import { JobResponse, Product, ProductFull, ProductSearch } from "../types";
 
 export interface SearchResponse {
   success: boolean;
@@ -10,8 +10,8 @@ export interface SearchResponse {
 export function ServerError(res: Response, message: string) {
   return res.status(500).json({ status: "Failed", message: message });
 }
-export function Success(res: Response, data: any) {
-  return res.status(200).json({ status: "Success", data: data });
+export function Success(res: Response, responseObject: JobResponse) {
+  return res.status(200).json({ status: "Success", data: responseObject });
 }
 
 export function BadRequest(res: Response, message: string) {

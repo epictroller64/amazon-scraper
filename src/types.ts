@@ -28,7 +28,11 @@ export type ProductFull = {
   amazonChoice: boolean;
   productDetails: { [p: string]: string };
 };
-
+export type JobResponse = {
+  body: ProductSearch[] | ProductFull | ProductReviewPage[] | SellerDetails;
+  totalPages?: number;
+  totalResults: number;
+};
 export type ProductSearch = {
   pageNum: number;
   products: Product[];
@@ -65,3 +69,11 @@ export type Log = {
   timestamp: number;
   jobId: string;
 };
+
+export type Domain = "de" | "com";
+export type Type =
+  | "amazon_search"
+  | "amazon_asin"
+  | "product_reviews"
+  | "product_details"
+  | "seller_details";
