@@ -4,7 +4,6 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
-  isAxiosError,
 } from "axios";
 import { Proxy, ProxyData } from "../models/proxy";
 import * as fs from "fs";
@@ -139,8 +138,8 @@ class RequestManager {
     if (proxyConfig) {
       requestObj.proxy = proxyConfig.proxy;
     }
-    const result = await this.instance.get(url, requestObj);
-    return result;
+    console.log(requestObj?.headers);
+    return await this.instance.get(url, requestObj);
   }
   extractDomainFromURL(urlString: string): "com" | "de" {
     try {

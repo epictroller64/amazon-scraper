@@ -100,6 +100,7 @@ export async function generateNewCookies(domain: "de" | "com") {
       await insertCookie(mapped, domain);
       saveSystemInfo("Cookies successfully saved to the database");
       const cookie: Cookie = { cookieString: mapped, timestamp: 0, id: 0 };
+      await browser.close();
       return cookie;
     }
     await browser.close();

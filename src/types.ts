@@ -24,9 +24,15 @@ export type ProductFull = {
   stockText: string;
   images: string[];
   categories: string[];
-  reviews: string[];
   amazonChoice: boolean;
+  discount: string;
+  about: string[];
+  soldBy: string;
   productDetails: { [p: string]: string };
+  dispatchesFrom: string;
+  delivery:
+    | { deliveryPrice: string; arrival: string; within: string }
+    | undefined;
 };
 export type JobResponse = {
   body: ProductSearch[] | ProductFull | ProductReviewPage[] | SellerDetails;

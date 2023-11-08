@@ -10,11 +10,9 @@ export class BackgroundManager {
   //Checks for the cookies and removes the aged ones. If necessary, generates new cookies
   cookieCheckerTimer: NodeJS.Timer | null = null;
   constructor() {
-    this.checkForCookies()
-      .then(function () {
-        console.log("Cookie checker has stopped");
-      })
-      .catch(() => console.log("Cookie checker has failed"));
+    this.checkForCookies().catch(() =>
+      console.log("Cookie checker has failed"),
+    );
   }
 
   async checkForCookies() {

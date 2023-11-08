@@ -4,12 +4,16 @@ import { ProductFull, ProductReview, SellerDetails } from "../../types";
 export function parseProductDetails(html: string) {
   const root = parse(html);
   const productFull: ProductFull = {
+    dispatchesFrom: "",
+    delivery: undefined,
     amazonChoice: false,
     categories: [],
     images: [],
     productDetails: {},
-    reviews: [],
     stockText: "",
+    discount: "",
+    about: [],
+    soldBy: "",
   };
   const images: string[] = [];
   const stock =
@@ -34,9 +38,58 @@ export function parseProductDetails(html: string) {
   productFull.title = parseTitle(root);
   productFull.reviewCount = parseInt(parseReviewCount(root)!) || undefined;
   productFull.asin = parseAsin(root);
+  productFull.discount = parseDiscount(root);
+  productFull.about = parseAboutBullets(root);
+  productFull.soldBy = parseSoldBy(root);
+  productFull.delivery = parseDeliveryData(root);
+  productFull.dispatchesFrom = parseDispatchesFrom(root);
   return productFull;
 }
 
+function parseDeliveryData(root: HTMLElement) {
+  const deliveryInfoSpan = root.querySelector(
+    "[data-csa-c-content-id=DEXUnifiedCXPDM]",
+  );
+
+  if (deliveryInfoSpan) {
+    // Extracting the required information
+    const deliveryPrice =
+      deliveryInfoSpan.getAttribute("data-csa-c-delivery-price") || "";
+    const arrival =
+      deliveryInfoSpan.getAttribute("data-csa-c-delivery-time") || "";
+    const within =
+      deliveryInfoSpan.getAttribute("data-csa-c-delivery-cutoff") || "";
+
+    // Constructing the object
+    return {
+      deliveryPrice,
+      arrival,
+      within,
+    };
+  }
+}
+function parseDispatchesFrom(root: HTMLElement) {
+  const containers = root.querySelectorAll(
+    "[data-csa-c-content-id=desktop-fulfiller-info]",
+  );
+  if (containers.length > 2) {
+    const container = containers[1];
+    return container.textContent.trim() || "";
+  }
+  return "";
+}
+function parseSoldBy(root: HTMLElement) {
+  const soldByElement = root.querySelector("#sellerProfileTriggerId");
+  return soldByElement ? soldByElement.textContent : "";
+}
+function parseAboutBullets(root: HTMLElement) {
+  const bulletDiv = root.querySelector("#feature-bullets");
+  if (bulletDiv) {
+    const listItems = bulletDiv.querySelectorAll(".a-list-item");
+    return Array.from(listItems).map((item) => item.textContent.trim());
+  }
+  return [];
+}
 function parseAsin(root: HTMLElement) {
   return root
     .querySelector("[data-csa-c-asin]:not([data-csa-c-asin=''])")
@@ -52,9 +105,17 @@ function parseTitle(root: HTMLElement) {
 }
 
 function parsePrice(root: HTMLElement) {
-  return root.querySelector(".a-price-whole font")?.textContent;
+  return (
+    root.querySelector(".a-price-whole font")?.textContent ||
+    root.querySelector(".a-price-whole")?.textContent
+  );
 }
-
+function parseDiscount(root: HTMLElement) {
+  return (
+    root.querySelector(".reinventPriceSavingsPercentageMargin")?.textContent ||
+    ""
+  );
+}
 function parsePriceSymbol(root: HTMLElement) {
   return root.querySelector(".a-price-symbol")?.text;
 }

@@ -1,6 +1,9 @@
 export type ApiClient = {
   apiKey: string;
-  username: string;
+  email: string;
   requestsRemaining: number;
   requestsTotal: number;
+  password: string;
+  firstname: string;
+  lastname: string;
 };

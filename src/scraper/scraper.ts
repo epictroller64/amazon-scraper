@@ -7,7 +7,7 @@ import {
   SearchOptions,
   SellerDetails,
 } from "../types";
-import { Request } from "../utils/requestManager";
+import { Request } from "../utils/requestManagerV2";
 import {
   parseLink,
   parseProductDetails,
@@ -27,7 +27,7 @@ export class AmazonScraper {
         try {
           const url = `https://www.amazon.${domain}/sp?language=en&ie=UTF8&seller=${id}`;
           const result = await Request.getRequest(url, this.apiKey);
-          const sellerDetails = parseSellerDetails(result.data);
+          const sellerDetails = parseSellerDetails(result.data.body);
           resolve(sellerDetails);
         } catch (e) {
           reject(e);
@@ -50,7 +50,7 @@ export class AmazonScraper {
             const response = await Request.getRequest(url, this.apiKey);
             const reviewPageResponse: ProductReviewPage = {
               pageNum: i,
-              reviews: parseReviews(response.data),
+              reviews: parseReviews(response.data.body),
             };
             resolve(reviewPageResponse);
           } catch (e) {
@@ -66,11 +66,11 @@ export class AmazonScraper {
   async getProductByAsin(asin: string, domain: "com" | "de") {
     const url = `https://amazon.${domain}/dp/${asin}`;
     const response = await Request.getRequest(url, this.apiKey);
-    parseProductDetails(response.data);
+    parseProductDetails(response.data.body);
   }
   async getProductDetails(url: string) {
-    const response = await Request.getRequest(url, this.apiKey, true);
-    const html = response.data;
+    const response = await Request.getRequest(url, this.apiKey);
+    const html = response.data.body;
     const productFull = parseProductDetails(html);
     productFull.url = url;
     return productFull;
@@ -190,11 +190,11 @@ export class AmazonScraper {
     ignoreNoPrice: boolean,
     domain: "de" | "com",
   ): Promise<Product[]> {
-    const response = await Request.getRequest(url, this.apiKey, true);
+    const response = await Request.getRequest(url, this.apiKey);
     if (!response) {
       console.log("false");
     }
-    const html = response.data;
+    const html = response.data.body;
     return this.getProducts(html, ignoreNoPrice, domain);
   }
 }
