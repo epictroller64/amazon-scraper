@@ -1,5 +1,6 @@
 import { HTMLElement, parse } from "node-html-parser";
-import { ProductFull, ProductReview, SellerDetails } from "../../types";
+import { Domain, ProductFull, ProductReview, SellerDetails } from "../../types";
+import fs from "fs";
 
 export function parseProductDetails(html: string) {
   const root = parse(html);
@@ -146,7 +147,7 @@ export function parseTableData(root: HTMLElement): { [key: string]: string } {
   });
   return result;
 }
-export function parseSellerDetails(html: string) {
+export function parseSellerDetails(html: string, domain: Domain) {
   const element = parse(html);
   const ratingElement = element.querySelector("#seller-info-feedback-summary");
   ratingElement?.querySelector("i")?.remove();
@@ -178,10 +179,11 @@ export function parseSellerDetails(html: string) {
     aboutText:
       element.querySelector("#spp-expander-about-seller")?.textContent || "",
     name: element.querySelector("#seller-name")?.textContent || "",
-    url:
-      element
+    url: `https://amazon.${domain}/${element
         .querySelector("#seller-info-storefront-link a")
-        ?.getAttribute("href") || "",
+        ?.getAttribute("href") || ""
+
+      }`,
     ratingText: ratingElement?.textContent || "",
     businessInformation: result,
   };
@@ -189,8 +191,10 @@ export function parseSellerDetails(html: string) {
 }
 export function parseReviews(html: string) {
   const element = parse(html);
+  fs.writeFileSync("revie.html", html);
   const reviews: ProductReview[] = [];
   const reviewElements = element.querySelectorAll("[data-hook='review']");
+  console.log("review elements: " + reviewElements.length);
   for (const reviewElement of reviewElements) {
     const review: ProductReview = {
       dateText:
@@ -216,6 +220,7 @@ export function parseReviews(html: string) {
           .querySelector("[data-hook='helpful-vote-statement']")
           ?.textContent.trim() || "",
       isVerified: !!reviewElement.querySelector("[data-hook='avp-badge']"),
+      images: reviewElement.querySelectorAll("[data-hook=review-image-tile]").map((image) => image.getAttribute("src")).map((image) => image?.replace("_SY88", "_SL1600_"))
     };
     reviews.push(review);
   }

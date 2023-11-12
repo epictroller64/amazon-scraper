@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { JobResponse, Product, ProductFull, ProductSearch } from "../types";
+import { JobResponse, Product } from "../types";
 
 export interface SearchResponse {
   success: boolean;
@@ -8,16 +8,18 @@ export interface SearchResponse {
 }
 
 export function ServerError(res: Response, message: string) {
-  return res.status(500).json({ status: "Failed", message: message });
+  return res.status(500).json({ success: false, message: message });
 }
 export function Success(res: Response, responseObject: JobResponse) {
-  return res.status(200).json({ status: "Success", data: responseObject });
+  res.setHeader("Cache-Control", "no-store");
+
+  return res.status(200).json({ success: true, data: responseObject });
 }
 
 export function BadRequest(res: Response, message: string) {
-  return res.status(400).json({ status: "Failed", message });
+  return res.status(400).json({ success: false, message });
 }
 
 export function Unauthorized(res: Response, message: string) {
-  return res.status(401).json({ status: "Failed", message });
+  return res.status(401).json({ success: false, message });
 }

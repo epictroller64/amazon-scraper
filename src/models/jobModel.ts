@@ -1,4 +1,4 @@
-import { Domain, Type } from "../types";
+import { Domain, Language, Type } from "../types";
 
 export interface JobModel {
   type: Type;
@@ -7,4 +7,6 @@ export interface JobModel {
   domain: Domain;
   jobId?: string;
   ownerApiKey?: string;
+  language: Language,
+  includeAds?: boolean;
 }

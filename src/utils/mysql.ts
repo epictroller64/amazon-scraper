@@ -1,12 +1,11 @@
 import mysql from "mysql2/promise";
 import { RowDataPacket } from "mysql2";
-import { ApiClient } from "../models/apiClient";
 
 // Create a MySQL connection pool
 export const pool = mysql.createPool({
-  host: "127.0.0.1",
-  user: "root",
-  password: "aaaaaa",
+  host: "157.230.4.246",
+  user: "main_admin",
+  password: "swagger_miketyson123477",
   database: "amazon_scraper",
   waitForConnections: true,
   connectionLimit: 10, // Adjust as needed

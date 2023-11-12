@@ -31,8 +31,8 @@ export type ProductFull = {
   productDetails: { [p: string]: string };
   dispatchesFrom: string;
   delivery:
-    | { deliveryPrice: string; arrival: string; within: string }
-    | undefined;
+  | { deliveryPrice: string; arrival: string; within: string }
+  | undefined;
 };
 export type JobResponse = {
   body: ProductSearch[] | ProductFull | ProductReviewPage[] | SellerDetails;
@@ -42,6 +42,7 @@ export type JobResponse = {
 export type ProductSearch = {
   pageNum: number;
   products: Product[];
+  ads?: Product[];
 };
 
 export type ProductReview = {
@@ -53,6 +54,7 @@ export type ProductReview = {
   ratingText: string;
   helpfulText: string;
   isVerified: boolean;
+  images: (string | undefined)[]
 };
 
 export type ProductReviewPage = {
@@ -83,3 +85,5 @@ export type Type =
   | "product_reviews"
   | "product_details"
   | "seller_details";
+
+export type Language = "en_GB" | "de_DE" | "cs_CZ" | "nl_NL" | "pl_PL" | "tr_TR" | "da_DK";

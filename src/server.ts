@@ -14,9 +14,10 @@ import {
 import { insertCache } from "./utils/cacheManager";
 import { addRequests, validateApiKey } from "./utils/apiManager";
 import { saveError, saveInfo } from "./utils/logManager";
-import { authMiddleware, validateJob } from "./middleware";
+import { authMiddleware } from "./middleware";
 import { generateJobId } from "./utils/jobManager";
 import fs from "fs";
+import { AmazonError } from "./models/error";
 
 dotenv.config();
 export const jobIds: Map<string, string> = new Map<string, string>();
@@ -41,9 +42,13 @@ export function startServer(parsedPort: number) {
     res.sendStatus(200);
   });
   app.use(express.json());
+  app.get("/online", (req, res) => {
+    res.sendStatus(200)
+  })
   app.get("/", async (req: Request, res: Response) => {
     try {
       const job = req.query as unknown as JobModel;
+      job.includeAds = job.includeAds as unknown as string === "true" ? true : false
       const jobId = generateJobId(job, req.user!.token);
       const apiKeyQuotaCheck = await validateApiKey(req.user!.token);
       if (!apiKeyQuotaCheck.result) {
@@ -74,12 +79,12 @@ function resetNetworkStats() {
 function logNetworkData(time: number) {
   console.log(
     "Done, took " +
-      time +
-      " milliseconds and used " +
-      totalRequestSize.toFixed(2) +
-      " MB, with a total of " +
-      totalRequestCount +
-      " requests.",
+    time +
+    " milliseconds and used " +
+    totalRequestSize.toFixed(2) +
+    " MB, with a total of " +
+    totalRequestCount +
+    " requests.",
   );
 }
 async function executeOperation(
@@ -91,11 +96,15 @@ async function executeOperation(
 ) {
   async function wrapper(func: () => Promise<void>) {
     const a = performance.now();
-    await func();
-    const b = performance.now();
-    const d = b - a;
-    logNetworkData(d);
-    await addRequests(req.user!.token, job.pages || 1); //adds requests to the apikey
+    try {
+      await func();
+      const b = performance.now();
+      const d = b - a;
+      logNetworkData(d);
+    } catch (err: any) {
+      const error: AmazonError = err
+      res.sendStatus(error.statusCode)
+    }
   }
 
   const operations = {
@@ -103,7 +112,7 @@ async function executeOperation(
       const productPromises = amazonScraper.search(job.keyword, job.domain, {
         maxPages: job.pages || 1,
         ignoreNoPrice: true,
-      });
+      }, job.includeAds || false, job.language);
       try {
         const productPages = await Promise.all(productPromises);
         const productDetails = await amazonScraper.getProductDetails(
@@ -126,7 +135,7 @@ async function executeOperation(
         const productPromises = amazonScraper.search(job.keyword, job.domain, {
           maxPages: job.pages || 1,
           ignoreNoPrice: true,
-        });
+        }, job.includeAds || false, job.language);
         try {
           const productPages = await Promise.all(productPromises);
           await insertCache(JSON.stringify(job), productPages);
@@ -158,11 +167,13 @@ async function executeOperation(
         body: product,
       };
       Success(res, jobResponse);
+      await addRequests(req.user!.token, 1);
     },
     product_reviews: async function () {
       const pagesPromises = amazonScraper.getProductReviewsByAsin(
         job.keyword,
         job.pages || 1,
+        job.language,
         job.domain,
       );
       const pages = await Promise.all(pagesPromises);
@@ -171,17 +182,20 @@ async function executeOperation(
         body: pages,
       };
       Success(res, jobResponse);
+      await addRequests(req.user!.token, pages.length);
     },
     seller_details: async function () {
       const seller = await amazonScraper.getSellerDetails(
         job.keyword,
         job.domain,
+        job.language
       );
       const jobResponse: JobResponse = {
         totalResults: 1,
         body: seller,
       };
       Success(res, jobResponse);
+      await addRequests(req.user!.token, 1);
     },
   };
   if (operations[job.type]) {
