@@ -27,7 +27,7 @@ class RequestManagerV2 {
     }
     //automatically sends through proxy api
     async getRequest(url) {
-        const result = await this.instance.get("http://127.0.0.1:5000/fetch_url", {
+        const result = await this.instance.get("https://py-tls.vercel.app/fetch_url", {
             params: {
                 url: url,
                 response_type: "text",
