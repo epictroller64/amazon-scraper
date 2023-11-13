@@ -180,8 +180,8 @@ export function parseSellerDetails(html: string, domain: Domain) {
       element.querySelector("#spp-expander-about-seller")?.textContent || "",
     name: element.querySelector("#seller-name")?.textContent || "",
     url: `https://amazon.${domain}/${element
-        .querySelector("#seller-info-storefront-link a")
-        ?.getAttribute("href") || ""
+      .querySelector("#seller-info-storefront-link a")
+      ?.getAttribute("href") || ""
 
       }`,
     ratingText: ratingElement?.textContent || "",

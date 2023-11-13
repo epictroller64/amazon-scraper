@@ -1,0 +1,1 @@
+{"version":3,"file":"useragentRepository.js","sourceRoot":"","sources":["../../src/repositories/useragentRepository.ts"],"names":[],"mappings":";;;AAAA,0CAAyC;AAGlC,KAAK,UAAU,qBAAqB,CACzC,MAAuB;IAEvB,MAAM,GAAG,GACP,uEAAuE,CAAC;IAC1E,OAAO,MAAM,IAAA,eAAO,EAAC,GAAG,EAAE,CAAC,MAAM,CAAC,SAAS,EAAE,MAAM,CAAC,MAAM,EAAE,MAAM,CAAC,IAAI,CAAC,CAAC,CAAC;AAC5E,CAAC;AAND,sDAMC"}
