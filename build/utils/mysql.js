@@ -7,10 +7,10 @@ exports.execute = exports.query = exports.pool = void 0;
 const promise_1 = __importDefault(require("mysql2/promise"));
 // Create a MySQL connection pool
 exports.pool = promise_1.default.createPool({
-    host: "157.230.4.246",
-    user: "main_admin",
-    password: "swagger_miketyson123477",
-    database: "amazon_scraper",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DATABASE,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0, // 0 means no limit
