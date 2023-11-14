@@ -30,7 +30,7 @@ export class RequestManagerV2 {
 
   //automatically sends through proxy api
   public async getRequest(url: string) {
-    const result = await this.instance.get("https://py-tls.vercel.app/fetch_url", {
+    const result = await this.instance.get(process.env.TLS_SERVER + "/fetch_url", {
       params: {
         url: url,
         response_type: "text",
