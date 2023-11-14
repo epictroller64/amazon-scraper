@@ -16,15 +16,22 @@ export async function query<T>(
   sql: string,
   params: string[] | number[],
 ): Promise<T | null> {
-  const connection = await pool.getConnection();
   try {
-    const [rows] = await connection.query<RowDataPacket[]>(sql, params);
-    if (rows.length > 0) {
-      return rows[0] as T;
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.query<RowDataPacket[]>(sql, params);
+      if (rows.length > 0) {
+        return rows[0] as T;
+      }
+      return null;
+    } finally {
+      connection.release();
     }
-    return null;
-  } finally {
-    connection.release();
+
+  }
+  catch (err: any) {
+    console.log(err.message)
+    return null
   }
 }
 
@@ -32,10 +39,16 @@ export async function execute(
   sql: string,
   params: string[] | number[] | unknown[],
 ) {
-  const connection = await pool.getConnection();
   try {
-    await connection.execute(sql, params);
-  } finally {
-    connection.release();
+    const connection = await pool.getConnection();
+    try {
+      await connection.execute(sql, params);
+    } finally {
+      connection.release();
+    }
+
+  } catch (err: any) {
+    console.log(err.message)
+    return null
   }
 }

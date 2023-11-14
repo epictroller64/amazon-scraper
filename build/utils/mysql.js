@@ -16,26 +16,37 @@ exports.pool = promise_1.default.createPool({
     queueLimit: 0, // 0 means no limit
 });
 async function query(sql, params) {
-    const connection = await exports.pool.getConnection();
     try {
-        const [rows] = await connection.query(sql, params);
-        if (rows.length > 0) {
-            return rows[0];
+        const connection = await exports.pool.getConnection();
+        try {
+            const [rows] = await connection.query(sql, params);
+            if (rows.length > 0) {
+                return rows[0];
+            }
+            return null;
         }
-        return null;
+        finally {
+            connection.release();
+        }
     }
-    finally {
-        connection.release();
+    catch (err) {
+        console.log(err.message);
+        return null;
     }
 }
 exports.query = query;
 async function execute(sql, params) {
-    const connection = await exports.pool.getConnection();
     try {
-        await connection.execute(sql, params);
+        const connection = await exports.pool.getConnection();
+        try {
+            await connection.execute(sql, params);
+        }
+        finally {
+            connection.release();
+        }
     }
-    finally {
-        connection.release();
+    catch (err) {
+        console.log(err.message);
     }
 }
 exports.execute = execute;
