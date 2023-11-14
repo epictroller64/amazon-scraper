@@ -49,6 +49,5 @@ export async function execute(
 
   } catch (err: any) {
     console.log(err.message)
-    return null
   }
 }
