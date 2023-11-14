@@ -12,6 +12,8 @@ export const pool = mysql.createPool({
   queueLimit: 0, // 0 means no limit
 });
 
+console.log(process.env)
+
 export async function query<T>(
   sql: string,
   params: string[] | number[],

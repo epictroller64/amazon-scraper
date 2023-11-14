@@ -20,7 +20,7 @@
   ],
   "devDependencies": {
     "@types/express": "^4.17.17",
-    "@types/node": "^20.4.2",
+    "@types/node": "^20.9.0",
     "@types/tough-cookie": "^4.0.2",
     "@types/user-agents": "^1.0.2",
     "@types/uuid": "^9.0.4",

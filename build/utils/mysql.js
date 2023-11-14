@@ -15,6 +15,7 @@ exports.pool = promise_1.default.createPool({
     connectionLimit: 10,
     queueLimit: 0, // 0 means no limit
 });
+console.log(process.env);
 async function query(sql, params) {
     try {
         const connection = await exports.pool.getConnection();

@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
-import dotenv from "dotenv";
+import * as dotenv from 'dotenv'
+dotenv.config();
 import { JobModel } from "./models/jobModel";
 import { performance } from "perf_hooks";
 import { AmazonScraper } from "./scraper/scraper";
@@ -19,7 +20,6 @@ import { generateJobId } from "./utils/jobManager";
 import fs from "fs";
 import { AmazonError } from "./models/error";
 
-dotenv.config();
 export const jobIds: Map<string, string> = new Map<string, string>();
 //New server implementation with GET requests
 export function startServer(parsedPort: number) {
