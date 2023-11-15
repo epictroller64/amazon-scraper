@@ -38,6 +38,7 @@ export type JobResponse = {
   body: ProductSearch[] | ProductFull | ProductReviewPage[] | SellerDetails;
   totalPages?: number;
   totalResults: number;
+  requestsConsumed: number
 };
 export type ProductSearch = {
   pageNum: number;
@@ -65,7 +66,7 @@ export type ProductReviewPage = {
 export type SellerDetails = {
   aboutText: string;
   name: string;
-  url: string;
+  url?: string;
   ratingText: string;
   businessInformation: { [key: string]: string };
 };

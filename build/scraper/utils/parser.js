@@ -132,7 +132,7 @@ function parseTableData(root) {
     return result;
 }
 exports.parseTableData = parseTableData;
-function parseSellerDetails(html, domain) {
+function parseSellerDetails(html) {
     const element = (0, node_html_parser_1.parse)(html);
     const ratingElement = element.querySelector("#seller-info-feedback-summary");
     ratingElement?.querySelector("i")?.remove();
@@ -163,9 +163,6 @@ function parseSellerDetails(html, domain) {
     const sellerDetails = {
         aboutText: element.querySelector("#spp-expander-about-seller")?.textContent || "",
         name: element.querySelector("#seller-name")?.textContent || "",
-        url: `https://amazon.${domain}/${element
-            .querySelector("#seller-info-storefront-link a")
-            ?.getAttribute("href") || ""}`,
         ratingText: ratingElement?.textContent || "",
         businessInformation: result,
     };

@@ -22,7 +22,6 @@ import { AmazonError } from "./models/error";
 import { retrieveApiClient } from "./repositories/apiKeyRepository";
 
 
-const activeRequests = new Map<string, 0>()
 
 export const jobIds: Map<string, string> = new Map<string, string>();
 //New server implementation with GET requests
@@ -134,6 +133,7 @@ async function executeOperation(
         const jobResponse: JobResponse = {
           totalResults: 1,
           body: productDetails,
+          requestsConsumed: 1
         };
         Success(res, jobResponse);
         await addRequests(req.user!.token, 1);
@@ -153,6 +153,7 @@ async function executeOperation(
           const productPages = await Promise.all(productPromises);
           await insertCache(JSON.stringify(job), productPages);
           const responseObject: JobResponse = {
+            requestsConsumed: productPages.length,
             totalResults: productPages.reduce(
               (acc, curr) => acc + curr.products.length,
               0,
@@ -177,6 +178,7 @@ async function executeOperation(
       );
       const jobResponse: JobResponse = {
         totalResults: 1,
+        requestsConsumed: 1,
         body: product,
       };
       Success(res, jobResponse);
@@ -191,6 +193,7 @@ async function executeOperation(
       );
       const pages = await Promise.all(pagesPromises);
       const jobResponse: JobResponse = {
+        requestsConsumed: pages.length,
         totalResults: pages.length,
         body: pages,
       };
@@ -204,6 +207,7 @@ async function executeOperation(
         job.language
       );
       const jobResponse: JobResponse = {
+        requestsConsumed: 1,
         totalResults: 1,
         body: seller,
       };

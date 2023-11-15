@@ -19,7 +19,8 @@ class AmazonScraper {
                 try {
                     const url = `https://www.amazon.${domain}/sp?language=${language}&ie=UTF8&seller=${id}`;
                     const result = await requestManagerV2_1.Request.getRequest(url);
-                    const sellerDetails = (0, parser_1.parseSellerDetails)(result.data.body, domain);
+                    const sellerDetails = (0, parser_1.parseSellerDetails)(result.data.body);
+                    sellerDetails.url = url;
                     resolve(sellerDetails);
                 }
                 catch (e) {

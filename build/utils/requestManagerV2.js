@@ -7,6 +7,7 @@ exports.Request = exports.RequestManagerV2 = void 0;
 const axios_1 = __importDefault(require("axios"));
 const error_1 = require("../models/error");
 const child_process_1 = require("child_process");
+//Currently not used.
 const runPythonScript = (url) => {
     const script = (0, child_process_1.spawn)('python', ['proxy.py', url]); // Replace './script.py' with your Python script's path
     script.stdout.on('data', (data) => {

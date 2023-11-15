@@ -3,6 +3,7 @@ import { AmazonError } from "../models/error";
 
 import { spawn } from 'child_process';
 
+//Currently not used.
 const runPythonScript = (url: string) => {
   const script = spawn('python', ['proxy.py', url]); // Replace './script.py' with your Python script's path
 

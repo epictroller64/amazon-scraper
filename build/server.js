@@ -41,7 +41,6 @@ const middleware_1 = require("./middleware");
 const jobManager_1 = require("./utils/jobManager");
 const fs_1 = __importDefault(require("fs"));
 const apiKeyRepository_1 = require("./repositories/apiKeyRepository");
-const activeRequests = new Map();
 exports.jobIds = new Map();
 //New server implementation with GET requests
 function startServer(parsedPort) {
@@ -139,6 +138,7 @@ async function executeOperation(req, res, amazonScraper, job, jobId) {
                 const jobResponse = {
                     totalResults: 1,
                     body: productDetails,
+                    requestsConsumed: 1
                 };
                 (0, responses_1.Success)(res, jobResponse);
                 await (0, apiManager_1.addRequests)(req.user.token, 1);
@@ -159,6 +159,7 @@ async function executeOperation(req, res, amazonScraper, job, jobId) {
                     const productPages = await Promise.all(productPromises);
                     await (0, cacheManager_1.insertCache)(JSON.stringify(job), productPages);
                     const responseObject = {
+                        requestsConsumed: productPages.length,
                         totalResults: productPages.reduce((acc, curr) => acc + curr.products.length, 0),
                         totalPages: productPages.length,
                         body: productPages,
@@ -180,6 +181,7 @@ async function executeOperation(req, res, amazonScraper, job, jobId) {
             const product = await amazonScraper.getProductDetails(job.keyword);
             const jobResponse = {
                 totalResults: 1,
+                requestsConsumed: 1,
                 body: product,
             };
             (0, responses_1.Success)(res, jobResponse);
@@ -189,6 +191,7 @@ async function executeOperation(req, res, amazonScraper, job, jobId) {
             const pagesPromises = amazonScraper.getProductReviewsByAsin(job.keyword, job.pages || 1, job.language, job.domain);
             const pages = await Promise.all(pagesPromises);
             const jobResponse = {
+                requestsConsumed: pages.length,
                 totalResults: pages.length,
                 body: pages,
             };
@@ -198,6 +201,7 @@ async function executeOperation(req, res, amazonScraper, job, jobId) {
         seller_details: async function () {
             const seller = await amazonScraper.getSellerDetails(job.keyword, job.domain, job.language);
             const jobResponse = {
+                requestsConsumed: 1,
                 totalResults: 1,
                 body: seller,
             };
