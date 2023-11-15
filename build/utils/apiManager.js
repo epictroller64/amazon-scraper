@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addRequests = exports.validateApiKey = void 0;
+exports.checkConcurrentRequestLimit = exports.addConcurrentRequest = exports.addRequests = exports.validateApiKey = void 0;
 const apiKeyRepository_1 = require("../repositories/apiKeyRepository");
-async function validateApiKey(apiKey) {
-    const apiClient = await (0, apiKeyRepository_1.retrieveApiClient)(apiKey);
+const concurrentRequests = new Map();
+async function validateApiKey(apiClient) {
     if (apiClient) {
         if (apiClient.requestsRemaining > 0) {
             return { result: true, message: "Ok." };
@@ -19,4 +19,26 @@ async function addRequests(apiKey, count) {
     await (0, apiKeyRepository_1.editApiClient)(apiKey, count);
 }
 exports.addRequests = addRequests;
+async function addConcurrentRequest(apiKey) {
+    const existing = concurrentRequests.get(apiKey);
+    if (!existing) {
+        concurrentRequests.set(apiKey, 1);
+    }
+    else {
+        concurrentRequests.set(apiKey, existing + 1);
+    }
+}
+exports.addConcurrentRequest = addConcurrentRequest;
+async function checkConcurrentRequestLimit(apiClient) {
+    const current = concurrentRequests.get(apiClient.apiKey);
+    if (!current) {
+        return { result: true, message: "" };
+    }
+    const limit = apiClient.maxConcurrent || 3;
+    if (current < limit) {
+        return { result: true, message: "" };
+    }
+    return { result: false, message: "Too many concurrent requests" };
+}
+exports.checkConcurrentRequestLimit = checkConcurrentRequestLimit;
 //# sourceMappingURL=apiManager.js.map

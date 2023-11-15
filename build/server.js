@@ -40,6 +40,8 @@ const logManager_1 = require("./utils/logManager");
 const middleware_1 = require("./middleware");
 const jobManager_1 = require("./utils/jobManager");
 const fs_1 = __importDefault(require("fs"));
+const apiKeyRepository_1 = require("./repositories/apiKeyRepository");
+const activeRequests = new Map();
 exports.jobIds = new Map();
 //New server implementation with GET requests
 function startServer(parsedPort) {
@@ -70,9 +72,17 @@ function startServer(parsedPort) {
             const job = req.query;
             job.includeAds = job.includeAds === "true" ? true : false;
             const jobId = (0, jobManager_1.generateJobId)(job, req.user.token);
-            const apiKeyQuotaCheck = await (0, apiManager_1.validateApiKey)(req.user.token);
+            //retrieve the api client here
+            const apiClient = await (0, apiKeyRepository_1.retrieveApiClient)(req.user.token);
+            const apiKeyQuotaCheck = await (0, apiManager_1.validateApiKey)(apiClient);
             if (!apiKeyQuotaCheck.result) {
                 (0, logManager_1.saveInfo)(req.user.token, apiKeyQuotaCheck.message, jobId);
+                (0, responses_1.Unauthorized)(res, "Not enough requests remaining");
+                return;
+            }
+            const concurrentCheck = await (0, apiManager_1.checkConcurrentRequestLimit)(apiClient);
+            if (!concurrentCheck.result) {
+                (0, logManager_1.saveInfo)(req.user.token, concurrentCheck.message, jobId);
                 (0, responses_1.Unauthorized)(res, "Not enough requests remaining");
                 return;
             }

@@ -4,6 +4,9 @@ exports.getCache = exports.removeCache = exports.insertCache = void 0;
 const cacheRepository_1 = require("../repositories/cacheRepository");
 async function insertCache(key, value) {
     const timestamp = Math.floor(new Date().getTime() / 1000);
+    if (typeof value !== "string") {
+        value = JSON.stringify(value);
+    }
     await (0, cacheRepository_1.storeKeyValue)(key, value, timestamp);
 }
 exports.insertCache = insertCache;

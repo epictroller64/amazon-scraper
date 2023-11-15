@@ -1,5 +1,6 @@
 import mysql from "mysql2/promise";
 import { RowDataPacket } from "mysql2";
+import { saveError } from "./logManager";
 
 // Create a MySQL connection pool
 export const pool = mysql.createPool({
@@ -12,7 +13,6 @@ export const pool = mysql.createPool({
   queueLimit: 0, // 0 means no limit
 });
 
-console.log(process.env)
 
 export async function query<T>(
   sql: string,
@@ -33,6 +33,8 @@ export async function query<T>(
   }
   catch (err: any) {
     console.log(err.message)
+    saveError("", JSON.stringify(err), "")
+    console.log(err)
     return null
   }
 }
@@ -50,6 +52,8 @@ export async function execute(
     }
 
   } catch (err: any) {
+    saveError("", JSON.stringify(err), "")
     console.log(err.message)
+    console.log(err)
   }
 }

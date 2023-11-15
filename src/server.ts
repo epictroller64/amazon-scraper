@@ -13,12 +13,16 @@ import {
   Unauthorized,
 } from "./models/responses";
 import { insertCache } from "./utils/cacheManager";
-import { addRequests, validateApiKey } from "./utils/apiManager";
+import { addRequests, checkConcurrentRequestLimit, validateApiKey } from "./utils/apiManager";
 import { saveError, saveInfo } from "./utils/logManager";
 import { authMiddleware } from "./middleware";
 import { generateJobId } from "./utils/jobManager";
 import fs from "fs";
 import { AmazonError } from "./models/error";
+import { retrieveApiClient } from "./repositories/apiKeyRepository";
+
+
+const activeRequests = new Map<string, 0>()
 
 export const jobIds: Map<string, string> = new Map<string, string>();
 //New server implementation with GET requests
@@ -50,15 +54,24 @@ export function startServer(parsedPort: number) {
       const job = req.query as unknown as JobModel;
       job.includeAds = job.includeAds as unknown as string === "true" ? true : false
       const jobId = generateJobId(job, req.user!.token);
-      const apiKeyQuotaCheck = await validateApiKey(req.user!.token);
+      //retrieve the api client here
+      const apiClient = await retrieveApiClient(req.user!.token)
+      const apiKeyQuotaCheck = await validateApiKey(apiClient!);
       if (!apiKeyQuotaCheck.result) {
         saveInfo(req.user!.token, apiKeyQuotaCheck.message, jobId);
+        Unauthorized(res, "Not enough requests remaining");
+        return;
+      }
+      const concurrentCheck = await checkConcurrentRequestLimit(apiClient!)
+      if (!concurrentCheck.result) {
+        saveInfo(req.user!.token, concurrentCheck.message, jobId);
         Unauthorized(res, "Not enough requests remaining");
         return;
       }
       jobIds.set(req.user!.token, jobId);
       resetNetworkStats();
       const amazonScraper: AmazonScraper = new AmazonScraper(req.user!.token);
+
       await executeOperation(req, res, amazonScraper, job, jobId);
     } catch (err: any) {
       saveError(req.user?.token || "", err.message, "");

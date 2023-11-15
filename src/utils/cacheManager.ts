@@ -7,7 +7,9 @@ import {
 
 export async function insertCache(key: string, value: any) {
   const timestamp = Math.floor(new Date().getTime() / 1000);
-
+  if (typeof value !== "string") {
+    value = JSON.stringify(value)
+  }
   await storeKeyValue(key, value, timestamp);
 }
 

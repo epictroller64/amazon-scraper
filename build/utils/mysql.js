@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.execute = exports.query = exports.pool = void 0;
 const promise_1 = __importDefault(require("mysql2/promise"));
+const logManager_1 = require("./logManager");
 // Create a MySQL connection pool
 exports.pool = promise_1.default.createPool({
     host: process.env.DB_HOST,
@@ -15,7 +16,6 @@ exports.pool = promise_1.default.createPool({
     connectionLimit: 10,
     queueLimit: 0, // 0 means no limit
 });
-console.log(process.env);
 async function query(sql, params) {
     try {
         const connection = await exports.pool.getConnection();
@@ -32,6 +32,8 @@ async function query(sql, params) {
     }
     catch (err) {
         console.log(err.message);
+        (0, logManager_1.saveError)("", JSON.stringify(err), "");
+        console.log(err);
         return null;
     }
 }
@@ -47,7 +49,9 @@ async function execute(sql, params) {
         }
     }
     catch (err) {
+        (0, logManager_1.saveError)("", JSON.stringify(err), "");
         console.log(err.message);
+        console.log(err);
     }
 }
 exports.execute = execute;

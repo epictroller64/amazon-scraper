@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.editApiClient = exports.retrieveApiClient = void 0;
 const mysql_1 = require("../utils/mysql");
 async function retrieveApiClient(apiKey) {
-    const sql = "SELECT * FROM apiclients WHERE apiKey = ?";
+    const sql = "SELECT A.*, B.maxConcurrent FROM amazon_scraper.apiclients AS A INNER JOIN amazon_scraper.packages AS B ON A.activePackage = B.id WHERE A.apiKey = ?;";
     return await (0, mysql_1.query)(sql, [apiKey]);
 }
 exports.retrieveApiClient = retrieveApiClient;
