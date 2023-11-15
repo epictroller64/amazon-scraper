@@ -10,7 +10,6 @@ const logManager_1 = require("./logManager");
 exports.pool = promise_1.default.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
-    port: 3306,
     password: process.env.DB_PASS,
     database: process.env.DATABASE,
     waitForConnections: true,
