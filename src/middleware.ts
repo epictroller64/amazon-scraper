@@ -8,11 +8,11 @@ export function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  console.log("auth hit")
   const token = req.headers["authorization"];
   if (token) {
+    const tokenRaw = token.replace("Bearer ", "")
     try {
-      req.user = { username: "swa", token: token }; // Attach the decoded user information to the request object
+      req.user = { username: "none", token: tokenRaw }; // Attach the decoded user information to the request object
       saveIp(token, req.socket.remoteAddress || req.ip); //log the ip address into database
     } catch (error) {
       // Handle invalid token

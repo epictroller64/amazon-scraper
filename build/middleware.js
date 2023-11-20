@@ -4,11 +4,11 @@ exports.validateJob = exports.authMiddleware = void 0;
 const logManager_1 = require("./utils/logManager");
 const responses_1 = require("./models/responses");
 function authMiddleware(req, res, next) {
-    console.log("auth hit");
     const token = req.headers["authorization"];
     if (token) {
+        const tokenRaw = token.replace("Bearer ", "");
         try {
-            req.user = { username: "swa", token: token }; // Attach the decoded user information to the request object
+            req.user = { username: "none", token: tokenRaw }; // Attach the decoded user information to the request object
             (0, logManager_1.saveIp)(token, req.socket.remoteAddress || req.ip); //log the ip address into database
         }
         catch (error) {

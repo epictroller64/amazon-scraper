@@ -49,7 +49,6 @@ export function startServer(parsedPort: number) {
     res.sendStatus(200)
   })
   app.get("/v1", async (req: Request, res: Response) => {
-    console.log("hit")
     try {
       const job = req.query as unknown as JobModel;
       job.includeAds = job.includeAds as unknown as string === "true" ? true : false
