@@ -67,6 +67,7 @@ function startServer(parsedPort) {
         res.sendStatus(200);
     });
     app.get("/v1", async (req, res) => {
+        console.log("hit");
         try {
             const job = req.query;
             job.includeAds = job.includeAds === "true" ? true : false;

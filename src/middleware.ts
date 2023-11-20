@@ -8,6 +8,7 @@ export function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
+  console.log("auth hit")
   const token = req.headers["authorization"];
   if (token) {
     try {

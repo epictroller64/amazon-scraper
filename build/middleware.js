@@ -4,6 +4,7 @@ exports.validateJob = exports.authMiddleware = void 0;
 const logManager_1 = require("./utils/logManager");
 const responses_1 = require("./models/responses");
 function authMiddleware(req, res, next) {
+    console.log("auth hit");
     const token = req.headers["authorization"];
     if (token) {
         try {
