@@ -70,7 +70,6 @@ export function startServer(parsedPort: number) {
       jobIds.set(req.user!.token, jobId);
       resetNetworkStats();
       const amazonScraper: AmazonScraper = new AmazonScraper(req.user!.token);
-
       await executeOperation(req, res, amazonScraper, job, jobId);
     } catch (err: any) {
       saveError(req.user?.token || "", err.message, "");
@@ -161,6 +160,7 @@ async function executeOperation(
             totalPages: productPages.length,
             body: productPages,
           };
+          res.setHeader("X-RapidAPI-Billing", "Requests=" + productPages.length.toString())
           Success(res, responseObject);
           await addRequests(req.user!.token, productPages.length);
         } catch (e: any) {

@@ -164,6 +164,7 @@ async function executeOperation(req, res, amazonScraper, job, jobId) {
                         totalPages: productPages.length,
                         body: productPages,
                     };
+                    res.setHeader("X-RapidAPI-Billing", "Requests=" + productPages.length.toString());
                     (0, responses_1.Success)(res, responseObject);
                     await (0, apiManager_1.addRequests)(req.user.token, productPages.length);
                 }

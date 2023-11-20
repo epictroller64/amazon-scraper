@@ -77,7 +77,6 @@ class AmazonScraper {
         const root = (0, node_html_parser_1.parse)(html);
         let selector = "div[data-asin]:not([value='']):not(.AdHolder)[data-uuid]:not(.s-widget-spacing-large)";
         if (includeAds) {
-            console.log("ads included");
             selector =
                 "div[data-asin]:not([value=''])[data-uuid]:not(.s-widget-spacing-large)";
         }

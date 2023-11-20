@@ -98,7 +98,6 @@ export class AmazonScraper {
     let selector =
       "div[data-asin]:not([value='']):not(.AdHolder)[data-uuid]:not(.s-widget-spacing-large)";
     if (includeAds) {
-      console.log("ads included")
       selector =
         "div[data-asin]:not([value=''])[data-uuid]:not(.s-widget-spacing-large)";
     }
