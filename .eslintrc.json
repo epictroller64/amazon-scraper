@@ -8,8 +8,7 @@
         "plugin:@typescript-eslint/recommended",
         "prettier"
     ],
-    "overrides": [
-    ],
+    "overrides": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -19,5 +18,6 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
     }
 }

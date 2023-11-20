@@ -7,7 +7,13 @@ const concurrentRequests = new Map<string, number>()
 export async function validateApiKey(apiClient: ApiClient) {
   if (apiClient) {
     if (apiClient.requestsRemaining > 0) {
-      return { result: true, message: "Ok." };
+      const renewDate = new Date(apiClient.renewtimestamp * 1000)
+      const currentDate = new Date()
+      if (currentDate.getTime() > renewDate.getTime()) {
+        return { result: false, message: "Package expired" }
+      }
+      if (apiClient.renewtimestamp)
+        return { result: true, message: "Ok." };
     } else {
       return { result: false, message: "Out of credits." };
     }

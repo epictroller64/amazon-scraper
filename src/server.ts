@@ -45,10 +45,10 @@ export function startServer(parsedPort: number) {
     res.sendStatus(200);
   });
   app.use(express.json());
-  app.get("/online", (req, res) => {
+  app.get("/v1/online", (req, res) => {
     res.sendStatus(200)
   })
-  app.get("/", async (req: Request, res: Response) => {
+  app.get("/v1", async (req: Request, res: Response) => {
     try {
       const job = req.query as unknown as JobModel;
       job.includeAds = job.includeAds as unknown as string === "true" ? true : false
@@ -64,7 +64,7 @@ export function startServer(parsedPort: number) {
       const concurrentCheck = await checkConcurrentRequestLimit(apiClient!)
       if (!concurrentCheck.result) {
         saveInfo(req.user!.token, concurrentCheck.message, jobId);
-        Unauthorized(res, "Not enough requests remaining");
+        Unauthorized(res, "Too many concurrent requests");
         return;
       }
       jobIds.set(req.user!.token, jobId);

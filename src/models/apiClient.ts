@@ -9,6 +9,6 @@ export type ApiClient = {
   requestsTotal: number;
   session: string;
   activepackage: number;
-  renewTimestamp: number
+  renewtimestamp: number
   maxConcurrent?: number
 };
